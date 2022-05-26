@@ -53,54 +53,54 @@ Parameters:
 Resources:
 
   # -------------------------- LAMBDA RESOURCES -------------------------------
-  # rCallSagemakerLambda:
-  #   Type: AWS::Lambda::Function
-  #   DependsOn: rCallSagemakerLambdaRole
-  #   Properties: 
-  #     Architectures: 
-  #       - x86_64
-  #     Code:
-  #       S3Bucket: !ImportValue
-  #         Fn::Sub: ${pS3ModelBucket}
-  #       S3Key: lambdas/call_sagemaker_lambda.zip
-  #     Description: Lambda function to execute sagemaker serverless inference endpoint
-  #     Environment:
-  #       Variables:
-  #         PYTHONPATH: /var/runtime:/var/runtime/packages:/var/task/packages
-  #     FunctionName: !Ref pCallSagemakerLambdaName
-  #     Handler: app.handler
-  #     MemorySize: 10240
-  #     PackageType: Zip 
-  #     Role: !GetAtt rCallSagemakerLambdaRole.Arn
-  #     Runtime: python3.9
-  #     Timeout: 900
+  rCallSagemakerLambda:
+    Type: AWS::Lambda::Function
+    DependsOn: rCallSagemakerLambdaRole
+    Properties:
+      Architectures:
+        - x86_64
+      Code:
+        S3Bucket: !ImportValue
+          Fn::Sub: ${pS3ModelBucket}
+        S3Key: lambdas/call_sagemaker_lambda.zip
+      Description: Lambda function to execute sagemaker serverless inference endpoint
+      Environment:
+        Variables:
+          PYTHONPATH: /var/runtime:/var/runtime/packages:/var/task/packages
+      FunctionName: !Ref pCallSagemakerLambdaName
+      Handler: app.handler
+      MemorySize: 10240
+      PackageType: Zip
+      Role: !GetAtt rCallSagemakerLambdaRole.Arn
+      Runtime: python3.9
+      Timeout: 900
 
-  # -------------------------- ROLE RESOURCES --------------------------------- 
-  # rCallSagemakerLambdaRole:
-  #   Type: AWS::IAM::Role
-  #   Properties:
-  #     AssumeRolePolicyDocument:
-  #       Version: '2012-10-17'
-  #       Statement:
-  #       - Effect: Allow
-  #         Principal:
-  #           Service:
-  #             - lambda.amazonaws.com
-  #         Action:
-  #           - sts:AssumeRole
-  #     Path: "/"
-  #     ManagedPolicyArns:
-  #       - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-  #     Policies:
-  #       - PolicyName: lambda_call_sagemaker_policy
-  #         PolicyDocument:
-  #           Version: '2012-10-17'
-  #           Statement:
-  #             - Effect: Allow
-  #               Action: 
-  #                 - sagemaker:InvokeEndpoint
-  #               Resource:
-  #                 - !Sub 'arn:aws:sagemaker:${AWS::Region}:${AWS::AccountId}:endpoint/${pEndpointName}'
+  # -------------------------- ROLE RESOURCES ---------------------------------
+  rCallSagemakerLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - lambda.amazonaws.com
+          Action:
+            - sts:AssumeRole
+      Path: "/"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: lambda_call_sagemaker_policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sagemaker:InvokeEndpoint
+                Resource:
+                  - !Sub 'arn:aws:sagemaker:${AWS::Region}:${AWS::AccountId}:endpoint/${pEndpointName}'
 
   rSageMakerExecutionEndpointRole:
     Type: AWS::IAM::Role
@@ -126,7 +126,7 @@ Resources:
                   - s3:GetObject*
                   - s3:ListObject*
                   - s3:ListBucket*
-                Resource: 
+                Resource:
                   - !ImportValue
                     Fn::Sub: ${pS3ModelBucket}-arn
                   - Fn::Join:
@@ -146,7 +146,7 @@ Resources:
                   - logs:CreateLogGroup
                   - logs:DescribeLogStreams
                   - ecr:GetAuthorizationToken
-                Resource: 
+                Resource:
                   - '*'
         - PolicyName: ecr_sagemaker_endpoint_policy
           PolicyDocument:
@@ -157,36 +157,36 @@ Resources:
                   - ecr:BatchGetImage
                   - ecr:BatchCheckLayerAvailability
                   - ecr:GetDownloadUrlForLayer
-                Resource: 
+                Resource:
                   - arn:aws:ecr:*:*:repository/*
 
   # -------------------------- SAGEMAKER RESOURCES ----------------------------
   rModel:
     Type: AWS::SageMaker::Model
-    Properties: 
-      Containers: 
-        - 
+    Properties:
+      Containers:
+        -
           Image: !Ref pInferenceImageUrl
           ModelDataUrl: !Sub "s3://${pS3ModelBucket}/${pS3ModelKey}"
-          Environment: 
+          Environment:
             SAGEMAKER_CONTAINER_LOG_LEVEL: !Ref pLogLevel
             SAGEMAKER_DEFAULT_INVOCATIONS_ACCEPT: !Ref pAcceptContentType
             SAGEMAKER_PROGRAM: !Ref pSagemakerProgramPy
             SAGEMAKER_REGION: !Sub "${AWS::Region}"
       ExecutionRoleArn: !GetAtt rSageMakerExecutionEndpointRole.Arn
       ModelName: !Ref pModelName
-  
+
   rEndpoint:
     Type: AWS::SageMaker::Endpoint
-    Properties: 
+    Properties:
       EndpointConfigName: !GetAtt rEndpointConfig.EndpointConfigName
       EndpointName: !Ref pEndpointName
-  
+
   rEndpointConfig:
     Type: AWS::SageMaker::EndpointConfig
     Properties:
       EndpointConfigName: !Ref pEndpointConfigName
-      ProductionVariants: 
+      ProductionVariants:
         -
           ModelName: !GetAtt rModel.ModelName
           VariantName: !Ref pVariantName

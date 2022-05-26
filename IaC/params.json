@@ -49,7 +49,7 @@
     },
     {
         "ParameterKey": "pCallSagemakerLambdaName",
-        "ParameterValue": "nu0087002ei-aid-dev-sagemaker-async-lambda"
+        "ParameterValue": "nu0087002ei-aid-dev-call-sagemaker-serverless-lambda"
     },
     {
         "ParameterKey": "pMemorySizeInMB",
