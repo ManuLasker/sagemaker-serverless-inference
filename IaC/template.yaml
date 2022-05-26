@@ -1,0 +1,197 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Serverless Inference Sagemaker POC (eiafanad - test)
+
+Parameters:
+  pModelName:
+    Description: Model name
+    Type: String
+  pS3ModelBucket:
+    Type: String
+  pS3ModelKey:
+    Type: String
+  pS3InferenceResultsBucket:
+    Type: String
+    Description: Inference Results Bucket Name parameter
+  pSageMakerRoleName:
+    Type: String
+  pInferenceImageUrl:
+    Description: The container used to deploy the model
+    Type: String
+  pEndpointConfigName:
+    Description: Endpoint config name
+    Type: String
+  pEndpointName:
+    Description: Endpoint name
+    Type: String
+  pVariantName:
+    Description: Endpoint config variant name
+    Type: String
+    Default: 'AllTraffic'
+  pInitialVariantWeight:
+    Description: Initial Endpoint Variant Weigh
+    Type: Number
+  pLogLevel:
+    Type: String
+    Default: 20
+  pAcceptContentType:
+    Type: String
+    Default: "application/json"
+  pSagemakerProgramPy:
+    Description: Nombre del archivo .py de inferencia
+    Type: String
+    Default: "inference.py"
+  pCallSagemakerLambdaName:
+    Description: Lambda function name
+    Type: String
+  pMaxConcurrency:
+    Description: Max Concurrency parameter for serverless sagemaker endpoint
+    Type: Number
+  pMemorySizeInMB:
+    Description: Memory size in MB parameter for serverless sagemaker endpoint
+    Type: Number
+
+Resources:
+
+  # -------------------------- LAMBDA RESOURCES -------------------------------
+  # rCallSagemakerLambda:
+  #   Type: AWS::Lambda::Function
+  #   DependsOn: rCallSagemakerLambdaRole
+  #   Properties: 
+  #     Architectures: 
+  #       - x86_64
+  #     Code:
+  #       S3Bucket: !ImportValue
+  #         Fn::Sub: ${pS3ModelBucket}
+  #       S3Key: lambdas/call_sagemaker_lambda.zip
+  #     Description: Lambda function to execute sagemaker serverless inference endpoint
+  #     Environment:
+  #       Variables:
+  #         PYTHONPATH: /var/runtime:/var/runtime/packages:/var/task/packages
+  #     FunctionName: !Ref pCallSagemakerLambdaName
+  #     Handler: app.handler
+  #     MemorySize: 10240
+  #     PackageType: Zip 
+  #     Role: !GetAtt rCallSagemakerLambdaRole.Arn
+  #     Runtime: python3.9
+  #     Timeout: 900
+
+  # -------------------------- ROLE RESOURCES --------------------------------- 
+  # rCallSagemakerLambdaRole:
+  #   Type: AWS::IAM::Role
+  #   Properties:
+  #     AssumeRolePolicyDocument:
+  #       Version: '2012-10-17'
+  #       Statement:
+  #       - Effect: Allow
+  #         Principal:
+  #           Service:
+  #             - lambda.amazonaws.com
+  #         Action:
+  #           - sts:AssumeRole
+  #     Path: "/"
+  #     ManagedPolicyArns:
+  #       - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+  #     Policies:
+  #       - PolicyName: lambda_call_sagemaker_policy
+  #         PolicyDocument:
+  #           Version: '2012-10-17'
+  #           Statement:
+  #             - Effect: Allow
+  #               Action: 
+  #                 - sagemaker:InvokeEndpoint
+  #               Resource:
+  #                 - !Sub 'arn:aws:sagemaker:${AWS::Region}:${AWS::AccountId}:endpoint/${pEndpointName}'
+
+  rSageMakerExecutionEndpointRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref pSageMakerRoleName
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - sagemaker.amazonaws.com
+          Action:
+            - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: s3_artifact_sagemaker_policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject*
+                  - s3:ListObject*
+                  - s3:ListBucket*
+                Resource: 
+                  - !ImportValue
+                    Fn::Sub: ${pS3ModelBucket}-arn
+                  - Fn::Join:
+                    - '/'
+                    - - !ImportValue
+                        Fn::Sub: ${pS3ModelBucket}-arn
+                      - '*'
+        - PolicyName: logs_sagemaker_endpoint_policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudwatch:PutMetricData
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - logs:CreateLogGroup
+                  - logs:DescribeLogStreams
+                  - ecr:GetAuthorizationToken
+                Resource: 
+                  - '*'
+        - PolicyName: ecr_sagemaker_endpoint_policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:BatchGetImage
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetDownloadUrlForLayer
+                Resource: 
+                  - arn:aws:ecr:*:*:repository/*
+
+  # -------------------------- SAGEMAKER RESOURCES ----------------------------
+  rModel:
+    Type: AWS::SageMaker::Model
+    Properties: 
+      Containers: 
+        - 
+          Image: !Ref pInferenceImageUrl
+          ModelDataUrl: !Sub "s3://${pS3ModelBucket}/${pS3ModelKey}"
+          Environment: 
+            SAGEMAKER_CONTAINER_LOG_LEVEL: !Ref pLogLevel
+            SAGEMAKER_DEFAULT_INVOCATIONS_ACCEPT: !Ref pAcceptContentType
+            SAGEMAKER_PROGRAM: !Ref pSagemakerProgramPy
+            SAGEMAKER_REGION: !Sub "${AWS::Region}"
+      ExecutionRoleArn: !GetAtt rSageMakerExecutionEndpointRole.Arn
+      ModelName: !Ref pModelName
+  
+  rEndpoint:
+    Type: AWS::SageMaker::Endpoint
+    Properties: 
+      EndpointConfigName: !GetAtt rEndpointConfig.EndpointConfigName
+      EndpointName: !Ref pEndpointName
+  
+  rEndpointConfig:
+    Type: AWS::SageMaker::EndpointConfig
+    Properties:
+      EndpointConfigName: !Ref pEndpointConfigName
+      ProductionVariants: 
+        -
+          ModelName: !GetAtt rModel.ModelName
+          VariantName: !Ref pVariantName
+          InitialVariantWeight: !Ref pInitialVariantWeight
+          # Serverless Config
+          ServerlessConfig:
+            MaxConcurrency: !Ref pMaxConcurrency
+            MemorySizeInMB: !Ref pMemorySizeInMB

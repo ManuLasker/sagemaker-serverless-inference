@@ -1,0 +1,6 @@
+[
+    {
+        "ParameterKey": "pS3ModelBucket",
+        "ParameterValue": "nu0087002ei-aid-mlops-artifacts-bucket"
+    }
+]

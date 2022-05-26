@@ -1,0 +1,66 @@
+[
+    {
+        "ParameterKey": "pInferenceImageUrl",
+        "ParameterValue": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-inference:1.7.1-transformers4.6.1-cpu-py36-ubuntu18.04"
+    },
+    {
+        "ParameterKey": "pS3ModelKey",
+        "ParameterValue": "firma/v2/model.tar.gz"
+    },
+    {
+        "ParameterKey": "pS3ModelBucket",
+        "ParameterValue": "nu0087002ei-aid-mlops-artifacts-bucket"
+    },
+    {
+        "ParameterKey": "pSageMakerRoleName",
+        "ParameterValue": "nu0087002ei-aid-dev-sagemaker-mlops-endpoint-role"
+    },
+    {
+        "ParameterKey": "pModelName",
+        "ParameterValue": "nu0087002ei-aid-dev-firma-model"
+    },
+    {
+        "ParameterKey": "pVariantName",
+        "ParameterValue": "AllTrafficFirma"
+    },
+    {
+        "ParameterKey": "pLogLevel",
+        "ParameterValue": "20"
+    },
+    {
+        "ParameterKey": "pAcceptContentType",
+        "ParameterValue": "application/json"
+    },
+    {
+        "ParameterKey": "pSagemakerProgramPy",
+        "ParameterValue": "inference.py"
+    },
+    {
+        "ParameterKey": "pEndpointConfigName",
+        "ParameterValue": "nu0087002ei-aid-dev-firma-model-endpoint-config"
+    },
+    {
+        "ParameterKey": "pEndpointName",
+        "ParameterValue": "nu0087002ei-aid-dev-firma-model"
+    },
+    {
+        "ParameterKey": "pS3InferenceResultsBucket",
+        "ParameterValue": "nu0087002ei-aid-dev-inference-results-bucket"
+    },
+    {
+        "ParameterKey": "pCallSagemakerLambdaName",
+        "ParameterValue": "nu0087002ei-aid-dev-sagemaker-async-lambda"
+    },
+    {
+        "ParameterKey": "pMemorySizeInMB",
+        "ParameterValue": "6144"
+    },
+    {
+        "ParameterKey": "pMaxConcurrency",
+        "ParameterValue": "150"
+    },
+    {
+        "ParameterKey": "pInitialVariantWeight",
+        "ParameterValue": "1.0"
+    }
+]
