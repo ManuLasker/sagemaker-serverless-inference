@@ -4,12 +4,15 @@ import boto3
 import os
 from PIL import Image
 from botocore.config import Config
-from src.utils.image_utilities import pil_to_base64 
+from src.utils.image_utilities import pil_to_base64
 
 config = Config(
     read_timeout=900,
     connect_timeout=900,
-    retries={"max_attempts": 0}
+    retries={
+        "max_attempts": 100,
+        "mode": "standard"
+    }
 )
 
 sg = boto3.client("sagemaker-runtime", region_name="us-east-1", config=config)
