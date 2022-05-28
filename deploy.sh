@@ -31,9 +31,9 @@ export $(grep -v '^#' $CREDENTIALS_FILE_PATH | xargs -0)
 # Executing bucket stack first and wait until finish
 if [[ $UPDATE_SWITCH == "no" ]]; then
     echo "creating mode stack"
-    # aws cloudformation create-stack --stack-name $STACK_BUCKET_NAME --template-body $TEMPLATE_BUCKET_FILE_PATH --parameters $PARAMS_BUCKET_FILE_PATH --capabilities CAPABILITY_IAM --on-failure DELETE
+    aws cloudformation create-stack --stack-name $STACK_BUCKET_NAME --template-body $TEMPLATE_BUCKET_FILE_PATH --parameters $PARAMS_BUCKET_FILE_PATH --capabilities CAPABILITY_IAM --on-failure DELETE
     # wait until finish
-    # aws cloudformation wait stack-create-complete --stack-name $STACK_BUCKET_NAME
+    aws cloudformation wait stack-create-complete --stack-name $STACK_BUCKET_NAME
     if [[ $UPDATE_ARTIFACT == "si" ]]; then
         # upload artifact to bucket
         aws s3 cp --recursive ./carta_laboral s3://nu0087002ei-aid-mlops-artifacts-bucket
