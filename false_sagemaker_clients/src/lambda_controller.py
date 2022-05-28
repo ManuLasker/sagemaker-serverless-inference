@@ -22,7 +22,7 @@ config = Config(
 )
 lambda_client = boto3.client('lambda', config=config)
 
-def call_lambda(call_identifier: int, lambda_name: str,
+def call_lambda(execution_number: int, call_identifier: int, lambda_name: str,
                 payload: Union[bytes, IO, TextIO, BinaryIO],
                 file_path: Path, current_date: str):
 
@@ -50,7 +50,8 @@ def call_lambda(call_identifier: int, lambda_name: str,
         status = 500
         elapsed_time = 0
 
-    write_results(file_path, metadata={"client_id": call_identifier,
+    write_results(file_path, metadata={"execution_number": execution_number,
+                                       "client_id": call_identifier,
                                        "status_response": status,
                                        "body_response": body_response,
                                        "elapsed_time": elapsed_time,
@@ -62,7 +63,7 @@ def main(n_clients: int, lambda_name: str,
     file_path = result_path / FILE_NAME.format(execution_type="lambda_execution",
                                             date_string=current_date,
                                             n_clients=n_clients)
-    args = [(str(uuid4()), lambda_name,
+    args = [(i, str(uuid4()), lambda_name,
              lambda_event_file_path.read_bytes(),
              file_path, current_date)
             for i in range(n_clients)]
