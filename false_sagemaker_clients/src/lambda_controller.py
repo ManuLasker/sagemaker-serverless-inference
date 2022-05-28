@@ -39,6 +39,8 @@ def call_lambda(execution_number: int, call_identifier: int, lambda_name: str,
         elapsed_time = time.time() - init_time
         status = response['StatusCode']
         body_response = response['Payload'].read().decode()
+        if body_response.get("errorMessage"):
+            status = 500
         print(f'response payload: {body_response}'
               f' for call_identifier: {call_identifier}')
     except Exception as error:
