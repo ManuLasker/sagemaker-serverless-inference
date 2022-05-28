@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Dict
 
 
-COLUMNS = ["client_id", "status_response", "body_response",
+COLUMNS = ["execution_number", "client_id", "status_response", "body_response",
            "elapsed_time", "current_date"]
 
 def write_results(file_path: Path, metadata: Dict[str, str]):
