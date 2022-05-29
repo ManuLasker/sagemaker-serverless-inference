@@ -48,7 +48,7 @@ with this configuration we can avoid to certain extend the ThrottleError for our
 
 The current configuration limits for our serverless endpoint is 150 in `MaxConcurrency`, with this limits we create 160 concurrent false clients. These give the following result:
 
-[150_without_max_attempts](false_sagemaker_clients/results/lambda_execution_05_26_2022_160.csv)
+[160_without_max_attempts](false_sagemaker_clients/results/lambda_execution_05_26_2022_160.csv)
 
 as you can see there are 10 clients with the following error:
 
@@ -60,7 +60,7 @@ as you can see there are 10 clients with the following error:
 
 The current configuration limits for our serverless endpoint is 150 in `MaxConcurrency`, with this limits we create 160 concurrent false clients; however in this case we use the `max_attempts` paramter. These give the following result:
 
-[150_with_max_attempts](false_sagemaker_clients/results/lambda_execution_05_28_2022_160.csv)
+[160_with_max_attempts](false_sagemaker_clients/results/lambda_execution_05_28_2022_160.csv)
 
 As you can see in this case we don't have any errors, all our false concurrent clients are responding well and with the expected output prediction.
 
