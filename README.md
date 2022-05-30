@@ -14,6 +14,34 @@ The cloudformation templates will deploy the following resources on AWS.
 [x] Sagemaker Serverless Endpoint Config</br>
 [x] Sagemaker Serverless Endpoint</br>
 
+## How to use this repository
+
+There are three important folders in this repository and one bash script that we need to execute:
+
+- *IaC*: this folder contains all the cloudformation templates to deploy our test previous describe infrastructure.</br>
+- *call_sagemaker_lambda*: this folder contains code for a lambda function, this will be upload to a s3 bucket and then deployed to aws using the cloudformation templates.</br>
+- *false_sagemaker_clients*: this folder contains a cli app that for this case it will create any number of concurrent clients to the call_sagemaker lambda function and it will also generate a csv file with differents kind of metadata for our experimentation, for example the status response for each request, the actual response, the time take for the request to complete, and so on.
+
+### Execute experiments
+
+To execute an experiment first, we need an AWS Account an credentials already configured, and a `.tar.gz` model artifact to be deployed on AWS Sagemaker this need to be save in the current direcorty, for this case it is not parametrized so it will be located in a folder name `./carta_labolar/firma/v2/model.tar.gz`, then we simply execute the script `deploy.sh` as follows:
+
+```Bash
+./deploy.sh no si
+```
+
+This will first deploy the mlops artifacts bucket and wait until completion, then it will upload the model artifact and the lambda `.zip` file, to finally deploy the main resources for the whole application. After the deployment's completion tu run one experiments, execute the following commands:
+
+```Bash
+cd false_sagemaker_clients
+make init
+make dev
+conda activate ./env/
+python run.py call-lambda -n 180
+```
+
+This will generate 180 concurrent invocation to the lambda function and wait, then after completion it will generate a `.csv` file with data to analyze our experiment.
+
 # Results
 
 The results of the experiments and benchmark for this kind of model is the following:
