@@ -1,5 +1,6 @@
 import boto3
 import time
+import json
 
 from datetime import datetime
 from uuid import uuid4
@@ -38,7 +39,7 @@ def call_lambda(execution_number: int, call_identifier: int, lambda_name: str,
         # get metadata values
         elapsed_time = time.time() - init_time
         status = response['StatusCode']
-        body_response = response['Payload'].read().decode()
+        body_response = json.loads(response['Payload'].read().decode())
         if body_response.get("errorMessage"):
             status = 500
         print(f'response payload: {body_response}'
