@@ -1,7 +1,7 @@
 #! /bin/env bash
 
 COMPONENT=call_sagemaker_lambda
-S3_ARTIFACT_BUCKET_NAME=nu0087002ei-aid-mlops-artifacts-bucket
+S3_ARTIFACT_BUCKET_NAME=nu0087002eis-aid-mlops-artifacts-bucket
 
 cd $COMPONENT
 make prod

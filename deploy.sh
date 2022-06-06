@@ -14,8 +14,8 @@ TEMPLATE_BUCKET_FILE_PATH="$PWD/IaC/template-artifacts-bucket.yaml"
 PARAMS_MAIN_FILE_PATH="$PWD/IaC/params.json"
 TEMPLATE_MAIN_FILE_PATH="$PWD/IaC/template.yaml"
 # Stack Name variable
-STACK_BUCKET_NAME="nu0087002ei-aid-dev-bucket-test-stack"
-STACK_MAIN_NAME="nu0087002ei-aid-dev-main-test-stack"
+STACK_BUCKET_NAME="nu0087002eis-aid-dev-bucket-test-stack"
+STACK_MAIN_NAME="nu0087002eis-aid-dev-main-test-stack"
 # Update switch
 UPDATE_SWITCH=${1:-"no"}
 UPDATE_ARTIFACT=${2:-"si"}
@@ -36,7 +36,7 @@ if [[ $UPDATE_SWITCH == "no" ]]; then
     aws cloudformation wait stack-create-complete --stack-name $STACK_BUCKET_NAME
     if [[ $UPDATE_ARTIFACT == "si" ]]; then
         # upload artifact to bucket
-        aws s3 cp --recursive ./carta_laboral s3://nu0087002ei-aid-mlops-artifacts-bucket
+        aws s3 cp --recursive ./carta_laboral s3://nu0087002eis-aid-mlops-artifacts-bucket
         bash ./build_deploy_lambda.sh
     fi
     # create main stack
@@ -48,7 +48,7 @@ elif [[ $UPDATE_SWITCH == "si" ]]; then
     # aws cloudformation wait stack-update-complete --stack-name $STACK_BUCKET_NAME
     if [[ $UPDATE_ARTIFACT == "si" ]]; then
         # upload artifact to bucket
-        # aws s3 cp --recursive ./carta_laboral s3://nu0087002ei-aid-mlops-artifacts-bucket
+        # aws s3 cp --recursive ./carta_laboral s3://nu0087002eis-aid-mlops-artifacts-bucket
         bash ./build_deploy_lambda.sh
     fi
     aws cloudformation update-stack --stack-name $STACK_MAIN_NAME --template-body $TEMPLATE_MAIN_FILE_PATH --parameters $PARAMS_MAIN_FILE_PATH --capabilities CAPABILITY_NAMED_IAM

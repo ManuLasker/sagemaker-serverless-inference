@@ -30,10 +30,10 @@ Outputs:
     Description: s3 model artifacts name
     Value: !Ref rModelArtifactsS3Bucket
     Export:
-      Name: nu0087002ei-aid-mlops-artifacts-bucket
+      Name: nu0087002eis-aid-mlops-artifacts-bucket
   
   oModelArtifactsS3BucketArn:
     Description: s3 model artifacts arn
     Value: !GetAtt rModelArtifactsS3Bucket.Arn
     Export:
-      Name: nu0087002ei-aid-mlops-artifacts-bucket-arn
+      Name: nu0087002eis-aid-mlops-artifacts-bucket-arn

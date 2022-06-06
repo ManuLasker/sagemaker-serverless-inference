@@ -31,7 +31,7 @@ def handler(event, context = None):
 if __name__ == "__main__":
     print("Make a call to a sagemaker serverless endpoint")
     result = handler({
-        "endpoint_name": "nu0087002ei-aid-dev-firma-model",
+        "endpoint_name": "nu0087002eis-aid-dev-firma-model",
         "input_image_path": sys.argv[1]
     })
     print(result)

@@ -9,15 +9,15 @@
     },
     {
         "ParameterKey": "pS3ModelBucket",
-        "ParameterValue": "nu0087002ei-aid-mlops-artifacts-bucket"
+        "ParameterValue": "nu0087002eis-aid-mlops-artifacts-bucket"
     },
     {
         "ParameterKey": "pSageMakerRoleName",
-        "ParameterValue": "nu0087002ei-aid-dev-sagemaker-mlops-endpoint-role"
+        "ParameterValue": "nu0087002eis-aid-dev-sagemaker-mlops-endpoint-role"
     },
     {
         "ParameterKey": "pModelName",
-        "ParameterValue": "nu0087002ei-aid-dev-firma-model"
+        "ParameterValue": "nu0087002eis-aid-dev-firma-model"
     },
     {
         "ParameterKey": "pVariantName",
@@ -37,19 +37,19 @@
     },
     {
         "ParameterKey": "pEndpointConfigName",
-        "ParameterValue": "nu0087002ei-aid-dev-firma-model-endpoint-config"
+        "ParameterValue": "nu0087002eis-aid-dev-firma-model-endpoint-config"
     },
     {
         "ParameterKey": "pEndpointName",
-        "ParameterValue": "nu0087002ei-aid-dev-firma-model"
+        "ParameterValue": "nu0087002eis-aid-dev-firma-model"
     },
     {
         "ParameterKey": "pS3InferenceResultsBucket",
-        "ParameterValue": "nu0087002ei-aid-dev-inference-results-bucket"
+        "ParameterValue": "nu0087002eis-aid-dev-inference-results-bucket"
     },
     {
         "ParameterKey": "pCallSagemakerLambdaName",
-        "ParameterValue": "nu0087002ei-aid-dev-call-sagemaker-serverless-lambda"
+        "ParameterValue": "nu0087002eis-aid-dev-call-sagemaker-serverless-lambda"
     },
     {
         "ParameterKey": "pMemorySizeInMB",
